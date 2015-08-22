@@ -1,0 +1,44 @@
+#!/usr/bin/python
+
+import os
+import argparse
+import json
+import logging
+import logging.config
+
+from pyccws.daemon import Daemon
+from pyccws import PyCCWS
+
+class Server(Daemon):
+    
+    def config(self, config):
+        self.config = config
+
+    def run(self):
+        server = PyCCWS()
+        server.connect_to_chromecast(self.config['chromecast']['name'])
+        ws = self.config['websocket']
+        server.listen(ws['port'], ws['host'])
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('command', choices = ['start', 'stop', 'restart'], help = "Command")
+
+args = parser.parse_args()
+
+home = os.path.expanduser("~")
+config = None
+
+with open(os.path.join(home, '.pyccws_config.json')) as f:
+    config = json.load(f)
+
+if config is None:
+    raise Exception("Cannot load config")
+
+s = Server('/tmp/pyccws.pid')
+s.config(config)
+
+logging.config.dictConfig(config['logger'])
+
+cmd = getattr(s, args.command)
+cmd()
