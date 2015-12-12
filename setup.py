@@ -11,5 +11,6 @@ setup(
     ],
     scripts = [
         'bin/pyccws',
+        'bin/pyccws-tracklist'
     ],
 )

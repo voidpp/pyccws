@@ -1,0 +1,29 @@
+#!/usr/bin/python
+
+import argparse
+
+from dateutil.parser import parse as parse_date
+from pyccws.tracklist import FileProcessor, YoutubeHandler
+
+parser = argparse.ArgumentParser()
+
+def valid_date(s):
+    try:
+        return parse_date(s)
+    except ValueError:
+        msg = "Not a valid date: '{0}'.".format(s)
+        raise argparse.ArgumentTypeError(msg)
+
+handlers = dict(
+    youtube = YoutubeHandler,
+)
+
+parser.add_argument("logfile", type = argparse.FileType('r'), help = "The pyccws logfile")
+parser.add_argument("start", type = valid_date, help = "Get the track list from here")
+parser.add_argument("type", choices = handlers.keys())
+
+args = parser.parse_args()
+
+proc = FileProcessor(handlers[args.type]())
+for result_line in proc.process(args.logfile, args.start):
+    print(result_line)

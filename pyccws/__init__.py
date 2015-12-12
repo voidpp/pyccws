@@ -72,9 +72,11 @@ class PyCCWS(object):
         self.clients.remove(client)
 
     def new_cast_status(self, status):
-        logger.debug('new_cast_status %s' % status)
-        self.send(json.dumps(dict(type = 'new_cast_status', data = status.__dict__)))
+        msg = json.dumps(dict(type = 'new_cast_status', data = status.__dict__))
+        logger.debug("new status: " + msg)
+        self.send(msg)
 
     def new_media_status(self, status):
-        logger.debug('new_media_status %s' % status)
-        self.send(json.dumps(dict(type = 'new_media_status', data = status.__dict__)))
+        msg = json.dumps(dict(type = 'new_media_status', data = status.__dict__))
+        logger.debug("new status: " + msg)
+        self.send(msg)
