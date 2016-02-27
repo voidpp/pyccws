@@ -18,12 +18,22 @@ handlers = dict(
     youtube = YoutubeHandler,
 )
 
+formatters = ['simple', 'html']
+
 parser.add_argument("logfile", type = argparse.FileType('r'), help = "The pyccws logfile")
 parser.add_argument("start", type = valid_date, help = "Get the track list from here")
-parser.add_argument("type", choices = handlers.keys())
+parser.add_argument("type", choices = handlers.keys(), nargs='?', default = 'youtube', help = "type")
+parser.add_argument("formatter", choices = formatters, nargs='?', default = 'simple', help = "output format")
 
 args = parser.parse_args()
 
 proc = FileProcessor(handlers[args.type]())
+
+from pyccws.tracklist import YoutubeOutputFormatter
+
+output_formatter = handlers[args.type].formatters[args.formatter]()
+
 for result_line in proc.process(args.logfile, args.start):
-    print(result_line)
+    output_formatter.add_track_entry(result_line)
+
+output_formatter.finalize()
