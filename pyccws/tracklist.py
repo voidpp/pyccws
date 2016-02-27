@@ -43,6 +43,10 @@ class YoutubeHandler(HandlerBase):
             return None
         if data['content_type'] != 'x-youtube/video':
             return None
+        if data['player_state'] != 'PLAYING':
+            return None
+        if 'title' not in data['media_metadata']:
+            return None
         if data['content_id'] == self.__cid:
             return None
         self.__cid = data['content_id']
